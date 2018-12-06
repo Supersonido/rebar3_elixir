@@ -29,7 +29,6 @@ init(State) ->
 
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
 do(State) ->
-  io:format("Check elixir Deps~n"),
   State1 = rebar3_elixir_utils:move_deps(State),
   {ok, State1}.
 

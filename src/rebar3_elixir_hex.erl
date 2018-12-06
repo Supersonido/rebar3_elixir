@@ -27,15 +27,22 @@ download(TmpDir, AppInfo, ResorceState, _State) ->
   fetch_and_compile(ResorceState, TmpDir, rebar_app_info:source(AppInfo)).
   
 
-
 %% Needs Update
-needs_update(_, _) ->
-  false.
+needs_update(AppInfo, _) ->
+  {iex, Name, Vsn} = rebar_app_info:source(AppInfo),
+  rebar_api:console("Checking for update, ~p", Name),
+  %%io:format("~p : ~p~n", [rebar_app_info:original_vsn(AppInfo), ec_cnv:to_list(Vsn)]),
+  case rebar_app_info:original_vsn(AppInfo) =:= ec_cnv:to_list(Vsn) of
+    true ->
+      false;
+    false ->
+      true
+  end.
 
 
 %%
 make_vsn(_, _) ->
-  ok.
+  {error, "Replacing version of type elixir not supported."}.
 
 
 %%=================================

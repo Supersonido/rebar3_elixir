@@ -19,7 +19,8 @@ init(Type, _State) ->
 
 %% Lock
 lock(AppInfo, _) ->
-  rebar_app_info:source(AppInfo).
+  {iex, Name, Vsn} = rebar_app_info:source(AppInfo),
+  {iex, rebar3_elixir_utils:to_binary(Name), rebar3_elixir_utils:to_binary(Vsn)}.
 
 
 %% Download download
@@ -31,7 +32,7 @@ download(TmpDir, AppInfo, ResorceState, _State) ->
 needs_update(AppInfo, _) ->
   {iex, Name, Vsn} = rebar_app_info:source(AppInfo),
   rebar_api:console("Checking for update, ~p", Name),
-  %%io:format("~p : ~p~n", [rebar_app_info:original_vsn(AppInfo), ec_cnv:to_list(Vsn)]),
+  rebar_api:console("~p : ~p~n", [rebar_app_info:original_vsn(AppInfo), ec_cnv:to_list(Vsn)]),
   case rebar_app_info:original_vsn(AppInfo) =:= ec_cnv:to_list(Vsn) of
     true ->
       false;
@@ -40,7 +41,7 @@ needs_update(AppInfo, _) ->
   end.
 
 
-%%
+%% Make VSN
 make_vsn(_, _) ->
   {error, "Replacing version of type elixir not supported."}.
 
@@ -83,7 +84,7 @@ fetch({iex, Name_, Vsn_}, CDN, Dir) ->
           rebar_api:console("Error: Unable to fetch package ~p ~p~n", [Name, Vsn])
       end;
     true ->
-      rebar_api:console("Dependency ~s already exists~n", [Name])
+      ok
   end.
 
 

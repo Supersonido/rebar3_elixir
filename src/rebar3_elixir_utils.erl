@@ -1,6 +1,6 @@
 -module(rebar3_elixir_utils).
 
--export([to_binary/1, get_env/1, compile_app/2]).
+-export([to_binary/1, get_env/1, compile_app/2, move_deps/1]).
 
 -spec to_binary(binary() | list() | integer() | atom()) -> binary().
 to_binary(V) when is_binary(V) -> V;
@@ -56,7 +56,31 @@ compile_app(State, Dir) ->
       error
   end.
 
-
+-spec move_deps(any()) -> ok.
+move_deps(State) ->
+  BaseDir = filename:join([rebar_dir:root_dir(State), "_elixir_build/"]),  %% Base app.
+  {ok, Dirs} = rebar_utils:list_dir(BaseDir),
+  Env = get_env(State),
+  BuildPath = filename:join([rebar_dir:root_dir(State), "_build/", "default/lib"]),
+  lists:map(
+    fun(Dir) -> 
+        DirPath = filename:join([BaseDir, Dir, "_build/", Env, "lib"]),
+        {ok, Deps} = rebar_utils:list_dir(DirPath),
+        
+        lists:map(
+          fun(Dep) ->
+              %%io:format("~p~n", [Dep])
+              Source = filename:join([DirPath, Dep]),
+              Target = filename:join([BuildPath, Dep]),
+              io:format("~p~n", [Source]),
+              io:format("~p~n", [Target]),
+              
+              ec_file:copy(Source, Target, [recursive])
+          end,
+          Deps -- [Dir])
+          
+    end, Dirs),
+  State.
 %%=============================
 %% Private functions
 %%=============================

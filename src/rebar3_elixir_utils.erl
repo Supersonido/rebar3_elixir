@@ -69,12 +69,8 @@ move_deps(State) ->
         
         lists:map(
           fun(Dep) ->
-              %%io:format("~p~n", [Dep])
               Source = filename:join([DirPath, Dep]),
-              Target = filename:join([BuildPath, Dep]),
-              io:format("~p~n", [Source]),
-              io:format("~p~n", [Target]),
-              
+              Target = filename:join([BuildPath, Dep]),              
               ec_file:copy(Source, Target, [recursive])
           end,
           Deps -- [Dir])

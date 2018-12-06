@@ -10,16 +10,10 @@ to_binary(V) when is_atom(V) -> atom_to_binary(V, latin1);
 to_binary(_) -> erlang:error(badarg).
 
 -spec get_env(any()) -> atom().
-get_env(State) ->
-  Config = rebar_state:get(State, elixir_opts, []),
+get_env(_State) ->
   case os:getenv("MIX_ENV") of
     false ->
-      case lists:keyfind(env, 1, Config) of
-        {env, E} ->
-          E;
-        _ ->
-          prod
-      end;
+      prod;
     E ->
       list_to_atom(E)
   end.

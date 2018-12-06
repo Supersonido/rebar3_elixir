@@ -53,23 +53,27 @@ compile_app(State, Dir) ->
 -spec move_deps(any()) -> ok.
 move_deps(State) ->
   BaseDir = filename:join([rebar_dir:root_dir(State), "_elixir_build/"]),  %% Base app.
-  {ok, Dirs} = rebar_utils:list_dir(BaseDir),
-  Env = get_env(State),
-  BuildPath = filename:join([rebar_dir:root_dir(State), "_build/", "default/lib"]),
-  lists:map(
-    fun(Dir) -> 
-        DirPath = filename:join([BaseDir, Dir, "_build/", Env, "lib"]),
-        {ok, Deps} = rebar_utils:list_dir(DirPath),
-        
-        lists:map(
-          fun(Dep) ->
-              Source = filename:join([DirPath, Dep]),
-              Target = filename:join([BuildPath, Dep]),              
-              ec_file:copy(Source, Target, [recursive])
-          end,
-          Deps -- [Dir])
-          
-    end, Dirs),
+  case rebar_utils:list_dir(BaseDir) of
+    {ok, Dirs} ->
+      Env = get_env(State),
+      BuildPath = filename:join([rebar_dir:root_dir(State), "_build/", "default/lib"]),
+      lists:map(
+        fun(Dir) -> 
+            DirPath = filename:join([BaseDir, Dir, "_build/", Env, "lib"]),
+            {ok, Deps} = rebar_utils:list_dir(DirPath),
+            
+            lists:map(
+              fun(Dep) ->
+                  Source = filename:join([DirPath, Dep]),
+                  Target = filename:join([BuildPath, Dep]),              
+                  ec_file:copy(Source, Target, [recursive])
+              end,
+              Deps -- [Dir])
+              
+        end, Dirs);
+    _ ->
+      ok
+  end,
   State.
 %%=============================
 %% Private functions

@@ -49,11 +49,12 @@ lock_(AppDir, {iex_git, Url}) ->
   {iex_git, Url, {ref, Ref}}.
 
 
-%% Download download
+%% Download
 download(TmpDir, AppInfo, State, _) ->
   check_type_support(),
   Name = rebar_app_info:name(AppInfo),
   BaseDir = filename:join([rebar_dir:root_dir(State), "_elixir_build/", Name]),  %% Base app.
+  ec_file:remove(BaseDir, [recursive]), %% Remove if exists
   case download_(BaseDir, rebar_app_info:source(AppInfo), State) of
     {ok, _} ->
       case rebar3_elixir_utils:compile_app(State, BaseDir) of  %% Compile elixir app.

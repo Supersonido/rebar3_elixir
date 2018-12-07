@@ -64,5 +64,7 @@ ebin/*.beam
 rel/example_project
 .concrete/DEV_MODE
 .rebar
+_build/
+ebin/
 
 # End of https://www.gitignore.io/api/emacs,erlang

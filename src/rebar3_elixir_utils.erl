@@ -1,6 +1,6 @@
 -module(rebar3_elixir_utils).
 
--export([to_binary/1, get_env/1, compile_app/2, move_deps/1]).
+-export([to_binary/1, get_env/1, compile_app/2, move_deps/1, add_elixir/1]).
 
 -spec to_binary(binary() | list() | integer() | atom()) -> binary().
 to_binary(V) when is_binary(V) -> V;
@@ -34,7 +34,17 @@ get_bin_dir(State) ->
       filename:dirname(ElixirBin_);
     {bin_dir, Dir1} -> Dir1
   end.
-  
+
+-spec get_lib_dir(any()) -> string().
+get_lib_dir(State) ->
+  Config = rebar_state:get(State, elixir_opts, []),
+  case lists:keyfind(lib_dir, 1, Config) of
+    false -> 
+      {ok, ElixirLibs_} = rebar_utils:sh("elixir -e \"IO.puts :code.lib_dir(:elixir)\"", []),
+      filename:join(re:replace(ElixirLibs_, "\\s+", "", [global,{return,list}]), "../");
+    {lib_dir, Dir2} -> Dir2
+  end.
+
 -spec compile_app(any(), string()) -> {ok, atom()} | error.
 compile_app(State, Dir) ->
   Env = get_env(State),
@@ -75,6 +85,14 @@ move_deps(State) ->
       ok
   end,
   State.
+
+add_elixir(State) ->
+  LibDir = get_lib_dir(State),
+  code:add_patha(filename:join(LibDir, "elixir/ebin")),
+  code:add_patha(filename:join(LibDir, "mix/ebin")),
+  code:add_patha(filename:join(LibDir, "logger/ebin")),
+  State.
+
 %%=============================
 %% Private functions
 %%=============================

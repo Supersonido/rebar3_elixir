@@ -66,5 +66,5 @@ rel/example_project
 .rebar
 _build/
 ebin/
-
+.rebar3
 # End of https://www.gitignore.io/api/emacs,erlang

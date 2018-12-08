@@ -2,9 +2,6 @@
 
 -behaviour(rebar_resource_v2).
 
--define(DEFAULT_CDN_SITE, "https://repo.hex.pm").
--define(CDN_TARBALL_LOCATION, "/tarballs").
-
 -export([init/2,
          lock/2,
          download/4,
@@ -19,17 +16,15 @@ init(Type, _State) ->
 
 %% Lock
 lock(AppInfo, _) ->
-  {iex_dep, Name, Vsn} = rebar_app_info:source(AppInfo),
-  {iex_dep, rebar3_elixir_utils:to_binary(Name), rebar3_elixir_utils:to_binary(Vsn)}.
-
+  rebar_app_info:source(AppInfo).
 
 %% Download download
-download(TmpDir, AppInfo, ResorceState, _State) ->
-  ok.
+download(_TmpDir, _AppInfo, _ResorceState, _State) ->
+  {error, forbidden}.
   
 
 %% Needs Update
-needs_update(AppInfo, _) ->
+needs_update(_AppInfo, _) ->
   false.
 
 

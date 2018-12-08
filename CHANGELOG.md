@@ -16,3 +16,4 @@
 - [+] Fetch and compile depencies from git resource
 - [+] Manage updates from Hex and git resources
 - [+] Allow dialyzer
+- [+] Allow rebar3 shell

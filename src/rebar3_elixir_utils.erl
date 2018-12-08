@@ -63,28 +63,31 @@ compile_app(State, Dir) ->
 -spec move_deps(any()) -> ok.
 move_deps(State) ->
   BaseDir = filename:join([rebar_dir:root_dir(State), "_elixir_build/"]),  %% Base app.
-  case rebar_utils:list_dir(BaseDir) of
-    {ok, Dirs} ->
-      Env = get_env(State),
-      BuildPath = filename:join([rebar_dir:root_dir(State), "_build/", "default/lib"]),
-      lists:map(
-        fun(Dir) -> 
-            DirPath = filename:join([BaseDir, Dir, "_build/", Env, "lib"]),
-            {ok, Deps} = rebar_utils:list_dir(DirPath),
+  Code =
+    case rebar_utils:list_dir(BaseDir) of
+      {ok, Dirs} ->
+        Env = get_env(State),
+        BuildPath = filename:join([rebar_dir:root_dir(State), "_build/", "default/lib"]),
+        lists:foldl(
+          fun(Dir, Acc) -> 
+              DirPath = filename:join([BaseDir, Dir, "_build/", Env, "lib"]),
+              {ok, Deps} = rebar_utils:list_dir(DirPath),
             
-            lists:map(
-              fun(Dep) ->
-                  Source = filename:join([DirPath, Dep]),
-                  Target = filename:join([BuildPath, Dep]),              
-                  ec_file:copy(Source, Target, [recursive])
-              end,
-              Deps -- [Dir])
-              
-        end, Dirs);
-    _ ->
-      ok
-  end,
-  State.
+              lists:foldl(
+                fun(Dep, Acc1) ->
+                    Source = filename:join([DirPath, Dep]),
+                    Target = filename:join([BuildPath, Dep]),              
+                    ec_file:copy(Source, Target, [recursive]),
+                    Acc1 ++ [filename:join([Target, "ebin"])]
+                end, Acc, Deps -- [Dir])
+                
+          end, [], Dirs);
+      _ ->
+        []
+    end,
+  EbinList = rebar_state:code_paths(State, all_deps),
+  EbinFull = EbinList ++ Code,
+  rebar_state:code_paths(State, all_deps, EbinFull).
 
 add_elixir(State) ->
   LibDir = get_lib_dir(State),

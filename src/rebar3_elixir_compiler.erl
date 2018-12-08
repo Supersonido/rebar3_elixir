@@ -30,10 +30,7 @@ init(State) ->
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
 do(State) ->
   State1 = rebar3_elixir_utils:move_deps(State),
-  State2 = rebar3_elixir_utils:add_deps_to_lock(State1),
-  {ok, State3} = rebar_prv_lock:do(State2), %% Save into lock file
-  io:format("~p~n", [rebar_state:lock(State3)]),
-  {ok, State3}.
+  {ok, State1}.
 
 -spec format_error(any()) ->  iolist().
 format_error(Reason) ->

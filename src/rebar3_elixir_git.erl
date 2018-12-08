@@ -61,6 +61,10 @@ download(TmpDir, AppInfo, State, _) ->
         {ok, Env} ->
           Source = filename:join([BaseDir, "_build/", Env, "lib", Name]),
           ec_file:copy(Source, TmpDir, [recursive]),
+          rebar3_elixir_utils:create_rebar_lock_from_mix(BaseDir, TmpDir),
+          DepsSource = filename:join([BaseDir, "_build/", Env, "lib"]),
+          {ok, Deps} = rebar_utils:list_dir(DepsSource),
+          rebar3_elixir_utils:move_deps(Deps -- [Name], DepsSource, State),
           ok;
         _ ->
           {error, <<"Something happen">>}

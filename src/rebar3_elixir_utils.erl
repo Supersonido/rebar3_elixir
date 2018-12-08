@@ -1,12 +1,13 @@
 -module(rebar3_elixir_utils).
 
 -export([to_binary/1, 
-         get_env/1, 
+         to_string/1,
+         get_env/1,
          compile_app/2, 
          move_deps/3, 
          add_elixir/1, 
-         create_rebar_lock_from_mix/1, 
-         create_rebar_lock_from_mix/2]).
+         create_rebar_lock_from_mix/2, 
+         create_rebar_lock_from_mix/3]).
 
 -spec to_binary(binary() | list() | integer() | atom()) -> binary().
 to_binary(V) when is_binary(V) -> V;
@@ -14,6 +15,13 @@ to_binary(V) when is_list(V) -> list_to_binary(V);
 to_binary(V) when is_integer(V) -> integer_to_binary(V);
 to_binary(V) when is_atom(V) -> atom_to_binary(V, latin1);
 to_binary(_) -> erlang:error(badarg).
+
+-spec to_string(binary() | list() | integer() | atom()) -> string().
+to_string(Value) when is_binary(Value) -> binary_to_list(Value);
+to_string(Value) when is_list(Value) -> Value;
+to_string(Value) when is_integer(Value) -> lists:flatten(io_lib:format("~p", [Value]));
+to_string(Value) when is_atom(Value) -> atom_to_list(Value);
+to_string(_) -> erlang:error(badarg).
 
 -spec get_env(rebar_state:t()) -> rebar_state:t().
 get_env(State) ->
@@ -86,21 +94,31 @@ move_deps(Deps, Dir, State) ->
         ec_file:copy(Source, Target, [recursive])
     end, Deps).
 
--spec create_rebar_lock_from_mix(string()) -> ok | {error, term()}.
-create_rebar_lock_from_mix(AppDir) ->
-  create_rebar_lock_from_mix(AppDir, AppDir).
+-spec create_rebar_lock_from_mix(string(), list()) -> ok | {error, term()}.
+create_rebar_lock_from_mix(AppDir, Deps) ->
+  create_rebar_lock_from_mix(AppDir, Deps, AppDir).
 
--spec create_rebar_lock_from_mix(string(), string()) -> ok | {error, term()}.
-create_rebar_lock_from_mix(AppDir, TargetDir) ->
+-spec create_rebar_lock_from_mix(string(), list(), string()) -> ok | {error, term()}.
+create_rebar_lock_from_mix(AppDir, Deps, TargetDir) ->
   MixLocks = get_mix_lock(AppDir),
   RebarLocks = 
     lists:foldl(
       fun(AppLock, Locks) ->
           case AppLock of
             {Name, {hex, App, Version, _, _, _, _}} ->
-              Locks ++ [{Name, {iex_dep, App, Version}, 0}];
+              case lists:member(to_string(Name), Deps) of
+                true ->
+                  Locks ++ [{Name, {iex_dep, App, Version}, 0}];
+                false ->
+                  Locks
+              end;
             {Name, {git, URL, Hash, _}} ->
-              Locks ++ [{Name, {iex_dep, URL, Hash}, 0}];
+              case lists:member(to_string(Name), Deps) of
+                true ->
+                  Locks ++ [{Name, {iex_dep, URL, Hash}, 0}];
+                false ->
+                  Locks
+              end;
             _->
               Locks
           end

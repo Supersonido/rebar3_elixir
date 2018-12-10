@@ -29,8 +29,7 @@ init(State) ->
 
 -spec do(rebar_state:t()) -> {ok, rebar_state:t()} | {error, string()}.
 do(State) ->
-  State1 = rebar3_elixir_utils:move_deps(State),
-  {ok, State1}.
+  {ok, State}.
 
 -spec format_error(any()) ->  iolist().
 format_error(Reason) ->

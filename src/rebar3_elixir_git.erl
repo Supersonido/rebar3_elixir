@@ -59,8 +59,16 @@ download(TmpDir, AppInfo, State, _) ->
     {ok, _} ->
       case rebar3_elixir_utils:compile_app(State, BaseDir) of  %% Compile elixir app.
         {ok, Env} ->
+          %% Copy app code into rebar tmp folder
           Source = filename:join([BaseDir, "_build/", Env, "lib", Name]),
           ec_file:copy(Source, TmpDir, [recursive]),
+          %% Copy deps into _build path
+          DepsSource = filename:join([BaseDir, "_build/", Env, "lib"]),
+          {ok, Files} = rebar_utils:list_dir(DepsSource),
+          Deps = Files -- [Name],
+          rebar3_elixir_utils:move_deps(Deps, DepsSource, State),
+          %% Generate rebar.lock for elixir app
+          rebar3_elixir_utils:create_rebar_lock_from_mix(BaseDir, Deps, TmpDir), 
           ok;
         _ ->
           {error, <<"Something happen">>}

@@ -5,9 +5,11 @@
          get_env/1,
          compile_app/2, 
          move_deps/3, 
-         add_elixir/1, 
-         create_rebar_lock_from_mix/2, 
-         create_rebar_lock_from_mix/3]).
+         add_elixir/1,
+         get_build_path/1,
+         create_rebar_lock_from_mix/2,
+         save_rebar_lock/2,
+         add_elixir_to_dependence/2]).
 
 -spec to_binary(binary() | list() | integer() | atom()) -> binary().
 to_binary(V) when is_binary(V) -> V;
@@ -69,6 +71,11 @@ get_lib_dir(State) ->
     {lib_dir, Dir2} -> Dir2
   end.
 
+-spec get_build_path(rebar_state:t()) -> string().
+get_build_path(State) ->
+  [Profile | _] = rebar_state:current_profiles(State),
+  filename:join([rebar_dir:root_dir(State), "_build/", to_string(Profile), "lib"]).
+
 -spec compile_app(rebar_state:t(), string()) -> {ok, atom()} | error.
 compile_app(State, Dir) ->
   Env = get_env(State),
@@ -86,7 +93,7 @@ compile_app(State, Dir) ->
 
 -spec move_deps(list(), string(), rebar_state:t()) -> list().
 move_deps(Deps, Dir, State) ->
-  BuildPath = filename:join([rebar_dir:root_dir(State), "_build/", "default/lib"]),
+  BuildPath = get_build_path(State),
   lists:map(
     fun(Dep) ->
         Source = filename:join([Dir, Dep]),
@@ -96,35 +103,32 @@ move_deps(Deps, Dir, State) ->
 
 -spec create_rebar_lock_from_mix(string(), list()) -> ok | {error, term()}.
 create_rebar_lock_from_mix(AppDir, Deps) ->
-  create_rebar_lock_from_mix(AppDir, Deps, AppDir).
-
--spec create_rebar_lock_from_mix(string(), list(), string()) -> ok | {error, term()}.
-create_rebar_lock_from_mix(AppDir, Deps, TargetDir) ->
   MixLocks = get_mix_lock(AppDir),
-  RebarLocks = 
-    lists:foldl(
-      fun(AppLock, Locks) ->
-          case AppLock of
-            {Name, {hex, App, Version, _, _, _, _}} ->
-              case lists:member(to_string(Name), Deps) of
-                true ->
-                  Locks ++ [{Name, {iex_dep, App, Version}, 0}];
-                false ->
-                  Locks
-              end;
-            {Name, {git, URL, Hash, _}} ->
-              case lists:member(to_string(Name), Deps) of
-                true ->
-                  Locks ++ [{Name, {iex_dep, URL, Hash}, 0}];
-                false ->
-                  Locks
-              end;
-            _->
-              Locks
-          end
-      end, [], MixLocks),
-  rebar_config:write_lock_file(filename:join(TargetDir, "rebar.lock"), RebarLocks).
-  
+  lists:foldl(
+    fun(AppLock, Locks) ->
+        case AppLock of
+          {Name, {hex, App, Version, _, _, _, _}} ->
+            case lists:member(to_string(Name), Deps) of
+              true ->
+                Locks ++ [{Name, {iex_dep, App, Version}, 0}];
+              false ->
+                Locks
+            end;
+          {Name, {git, URL, Hash, _}} ->
+            case lists:member(to_string(Name), Deps) of
+              true ->
+                Locks ++ [{Name, {iex_dep, URL, Hash}, 0}];
+              false ->
+                Locks
+            end;
+          _->
+            Locks
+        end
+    end, [], MixLocks).
+
+-spec save_rebar_lock(string(), list()) -> ok | {error, term()}.
+save_rebar_lock(Dir, Locks) ->
+  rebar_config:write_lock_file(filename:join(Dir, "rebar.lock"), Locks).
 
 -spec add_elixir(rebar_state:t()) -> rebar_state:t().
 add_elixir(State) ->
@@ -133,6 +137,38 @@ add_elixir(State) ->
   code:add_patha(filename:join(LibDir, "mix/ebin")),
   code:add_patha(filename:join(LibDir, "logger/ebin")),
   State.
+
+-spec add_elixir_to_dependence(rebar_state:t(), list()) -> list().
+add_elixir_to_dependence(State, Locks)->
+  LibDir = get_lib_dir(State),
+  BuildPath = get_build_path(State),
+  
+  %% Link Elixir
+  ElixirPath = filename:join(LibDir, "elixir"),
+  ElixirBuildPath = filename:join(BuildPath, "elixir"),
+  ok = file:make_symlink(ElixirPath, ElixirBuildPath),
+  
+  %% Link Logger
+  LoggerPath = filename:join(LibDir, "logger"),
+  LoggerBuildPath = filename:join(BuildPath, "logger"),
+  ok = file:make_symlink(LoggerPath, LoggerBuildPath),
+  
+  %% Link mix
+  MixPath = filename:join(LibDir, "mix"),
+  MixBuildPath = filename:join(BuildPath, "mix"),
+  ok = file:make_symlink(MixPath, MixBuildPath),
+  
+  %% Add Locks
+  elixit_to_lock(Locks).
+
+-spec elixit_to_lock(list()) -> list().
+elixit_to_lock(Lock) ->   
+  Lock ++ 
+    [
+     {elixir, {iex_dep, <<"elixir">>, <<"">>}, 0},
+     {logger, {iex_dep, <<"logger">>, <<"">>}, 0},
+     {mix, {iex_dep, <<"mix">>, <<"">>}, 0}
+    ].
 
 %%=============================
 %% Private functions

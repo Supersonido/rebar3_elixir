@@ -146,17 +146,17 @@ add_elixir_to_dependence(State, Locks)->
   %% Link Elixir
   ElixirPath = filename:join(LibDir, "elixir"),
   ElixirBuildPath = filename:join(BuildPath, "elixir"),
-  ok = file:make_symlink(ElixirPath, ElixirBuildPath),
+  file:make_symlink(ElixirPath, ElixirBuildPath),
   
   %% Link Logger
   LoggerPath = filename:join(LibDir, "logger"),
   LoggerBuildPath = filename:join(BuildPath, "logger"),
-  ok = file:make_symlink(LoggerPath, LoggerBuildPath),
+  file:make_symlink(LoggerPath, LoggerBuildPath),
   
   %% Link mix
   MixPath = filename:join(LibDir, "mix"),
   MixBuildPath = filename:join(BuildPath, "mix"),
-  ok = file:make_symlink(MixPath, MixBuildPath),
+  file:make_symlink(MixPath, MixBuildPath),
   
   %% Add Locks
   elixit_to_lock(Locks).

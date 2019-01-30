@@ -68,7 +68,11 @@ download(TmpDir, AppInfo, State, _) ->
           Deps = Files -- [Name],
           rebar3_elixir_utils:move_deps(Deps, DepsSource, State),
           %% Generate rebar.lock for elixir app
-          rebar3_elixir_utils:create_rebar_lock_from_mix(BaseDir, Deps, TmpDir), 
+          Lock = rebar3_elixir_utils:create_rebar_lock_from_mix(BaseDir, Deps), 
+          %% Add elixir as depencende
+          Lock2 = rebar3_elixir_utils:add_elixir_to_dependence(State, Lock),
+          %% Save Lock.
+          rebar3_elixir_utils:save_rebar_lock(TmpDir, Lock2),
           ok;
         _ ->
           {error, <<"Something happen">>}
@@ -80,10 +84,8 @@ download(TmpDir, AppInfo, State, _) ->
   end.
 
 download_(Dir, {iex_git, Url}, State) ->
-  ?WARN("WARNING: It is recommended to use {branch, Name}, {tag, Tag} or {ref, Ref}, otherwise updating the dep may not work as expected.", []),
   download_(Dir, {iex_git, Url, {branch, "master"}}, State);
 download_(Dir, {iex_git, Url, ""}, State) ->
-  ?WARN("WARNING: It is recommended to use {branch, Name}, {tag, Tag} or {ref, Ref}, otherwise updating the dep may not work as expected.", []),
   download_(Dir, {iex_git, Url, {branch, "master"}}, State);
 download_(Dir, {iex_git, Url, {branch, Branch}}, _State) ->
   ok = filelib:ensure_dir(Dir),
@@ -98,7 +100,6 @@ download_(Dir, {iex_git, Url, {ref, Ref}}, _State) ->
   maybe_warn_local_url(Url),
   git_clone(ref, git_vsn(), Url, Dir, Ref);
 download_(Dir, {iex_git, Url, Rev}, _State) ->
-  ?WARN("WARNING: It is recommended to use {branch, Name}, {tag, Tag} or {ref, Ref}, otherwise updating the dep may not work as expected.", []),
   ok = filelib:ensure_dir(Dir),
   maybe_warn_local_url(Url),
   git_clone(rev, git_vsn(), Url, Dir, Rev).

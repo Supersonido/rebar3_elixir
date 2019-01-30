@@ -12,6 +12,8 @@
 
 ## Next Release
 
+## v0.1.0
+
 - [+] Fetch and compile depencies from Hex resource
 - [+] Fetch and compile depencies from git resource
 - [+] Manage updates from Hex and git resources

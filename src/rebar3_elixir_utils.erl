@@ -115,14 +115,14 @@ create_rebar_lock_from_mix(AppDir, Deps) ->
           {Name, {hex, App, Version, _, _, _, _}} ->
             case lists:member(to_string(Name), Deps) of
               true ->
-                Locks ++ [{Name, {iex, App, Version}, 0}];
+                Locks ++ [{Name, {iex_dep, App, Version}, 0}];
               false ->
                 Locks
             end;
           {Name, {git, URL, Hash, _}} ->
             case lists:member(to_string(Name), Deps) of
               true ->
-                Locks ++ [{Name, {iex, URL, Hash}, 0}];
+                Locks ++ [{Name, {iex_dep, URL, Hash}, 0}];
               false ->
                 Locks
             end;

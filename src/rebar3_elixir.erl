@@ -5,5 +5,6 @@
 init(State) ->
   State1 = rebar3_elixir_utils:add_elixir(State),
   State2 = rebar_state:add_resource(State1, {iex, rebar3_elixir_hex}),
-  State3 = rebar_state:add_project_builder(State2, mix, rebar3_elixir_compiler),
-  {ok, State3}.
+  State3 = rebar_state:add_resource(State2, {iex_dep, rebar3_elixir_dep}),
+  State4 = rebar_state:add_project_builder(State3, mix, rebar3_elixir_compiler),
+  {ok, State4}.

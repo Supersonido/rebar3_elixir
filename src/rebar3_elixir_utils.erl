@@ -9,11 +9,11 @@
          get_build_path/1,
          create_rebar_lock_from_mix/2,
          save_rebar_lock/2,
-         add_elixir_to_dependence/2,
          %% NEW
-         get_deps/1,
          compile/1,
-         move_to_path/3
+         move_to_path/3,
+         elixir_to_lock/1,
+         add_elixir_to_path/1
         ]).
 
 -spec to_binary(binary() | list() | integer() | atom()) -> binary().
@@ -143,8 +143,8 @@ add_elixir(State) ->
   code:add_patha(filename:join(LibDir, "logger/ebin")),
   State.
 
--spec add_elixir_to_dependence(rebar_state:t(), list()) -> list().
-add_elixir_to_dependence(State, Locks)->
+-spec add_elixir_to_path(rebar_state:t()) -> rebar_state:t().
+add_elixir_to_path(State)->
   LibDir = get_lib_dir(State),
   BuildPath = get_build_path(State),
   
@@ -163,11 +163,10 @@ add_elixir_to_dependence(State, Locks)->
   MixBuildPath = filename:join(BuildPath, "mix"),
   file:make_symlink(MixPath, MixBuildPath),
   
-  %% Add Locks
-  elixit_to_lock(Locks).
+  State.
 
--spec elixit_to_lock(list()) -> list().
-elixit_to_lock(Lock) ->   
+-spec elixir_to_lock(list()) -> list().
+elixir_to_lock(Lock) ->   
   Lock ++ 
     [
      {elixir, {iex_dep, <<"elixir">>, <<"">>}, 0},
@@ -176,13 +175,6 @@ elixit_to_lock(Lock) ->
     ].
 
 %% NEW CODE
--spec get_deps(string()) -> [string()].
-get_deps(Path) ->
-  DepsDir = filename:join(Path, "deps"),
-  {ok, Deps} = rebar_utils:list_dir(DepsDir),
-  Deps.
-
-
 -spec compile(string()) -> ok.
 compile(AppDir) ->
   {ok, _ } = rebar_utils:sh("mix deps.get", 

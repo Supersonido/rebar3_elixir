@@ -14,7 +14,8 @@ build(AppInfo) ->
 
   ok = rebar3_elixir_utils:compile(AppDir),
 
-  Deps = rebar3_elixir_utils:get_deps(AppDir),
+  {ok, Apps} = rebar_utils:list_dir(BuildElixirDir),
+  Deps = Apps -- [AppName],
   rebar3_elixir_utils:move_to_path(Deps, BuildElixirDir, BuildDir),
   
   AppBuild = filename:join(AppDir, "_build/prod/lib/" ++ AppName ++ "/ebin"),
@@ -22,7 +23,8 @@ build(AppInfo) ->
   ec_file:copy(AppBuild, AppTaget, [recursive]),
   
   Lock = rebar3_elixir_utils:create_rebar_lock_from_mix(AppDir, Deps),
-  rebar3_elixir_utils:save_rebar_lock(AppDir, Lock),
+  ElixirLock = rebar3_elixir_utils:elixir_to_lock(Lock),
+  rebar3_elixir_utils:save_rebar_lock(AppDir, ElixirLock),
   
   ok.
 

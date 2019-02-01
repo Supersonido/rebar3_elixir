@@ -3,13 +3,18 @@
 -export([to_binary/1, 
          to_string/1,
          get_env/1,
-         compile_app/2, 
-         move_deps/3, 
+         compile_app/2,
+         move_deps/3,
          add_elixir/1,
          get_build_path/1,
          create_rebar_lock_from_mix/2,
          save_rebar_lock/2,
-         add_elixir_to_dependence/2]).
+         add_elixir_to_dependence/2,
+         %% NEW
+         get_deps/1,
+         compile/1,
+         move_to_path/3
+        ]).
 
 -spec to_binary(binary() | list() | integer() | atom()) -> binary().
 to_binary(V) when is_binary(V) -> V;
@@ -170,6 +175,39 @@ elixit_to_lock(Lock) ->
      {mix, {iex_dep, <<"mix">>, <<"">>}, 0}
     ].
 
+%% NEW CODE
+-spec get_deps(string()) -> [string()].
+get_deps(Path) ->
+  DepsDir = filename:join(Path, "deps"),
+  {ok, Deps} = rebar_utils:list_dir(DepsDir),
+  Deps.
+
+
+-spec compile(string()) -> ok.
+compile(AppDir) ->
+  {ok, _ } = rebar_utils:sh("mix deps.get", 
+                            [
+                             {cd, AppDir}, 
+                             {use_stdout, false}, 
+                             abort_on_error]),
+  {ok, _ } = rebar_utils:sh("mix compile", 
+                            [
+                             {cd, AppDir}, 
+                             {use_stdout, false}, 
+                             abort_on_error,
+                             {env, [
+                                    {"MIX_ENV", "prod"}
+                                   ]
+                             }]),
+  ok.
+
+move_to_path(Files, Source, Traget) ->
+  lists:map(
+    fun(File) ->
+        Source1 = filename:join([Source, File]),
+        Target1 = filename:join([Traget, File]),              
+        ec_file:copy(Source1, Target1, [recursive])
+    end, Files).
 %%=============================
 %% Private functions
 %%=============================

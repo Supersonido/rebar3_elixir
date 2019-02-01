@@ -9,18 +9,10 @@
 build(AppInfo) ->
   AppDir = rebar_app_info:dir(AppInfo),
   BuildDir = filename:join(AppDir, "../"),
-  rebar_utils:sh("mix deps.get", [
-                                  {cd, AppDir}, 
-                                  {use_stdout, false}, 
-                                  abort_on_error]),
-  rebar_utils:sh("mix compile", [
-                                 {cd, AppDir}, 
-                                 {use_stdout, false}, 
-                                 abort_on_error,
-                                 {env, [
-                                        {"MIX_ENV", rebar3_elixir_utils:get_env()}
-                                       ]
-                                 }]),
+  BuildElixirDir = filename:join(AppDir, "_build/prod/lib/"),
+  ok = rebar3_elixir_utils:compile(AppDir),
+  Deps = rebar3_elixir_utils:get_deps(AppDir),
+  rebar3_elixir_utils:move_to_path(Deps, BuildElixirDir, BuildDir),
   ok.
 
 format_error({mix_not_found, Name}) ->

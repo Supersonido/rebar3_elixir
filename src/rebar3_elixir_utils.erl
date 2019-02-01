@@ -106,7 +106,7 @@ move_deps(Deps, Dir, State) ->
         ec_file:copy(Source, Target, [recursive])
     end, Deps).
 
--spec create_rebar_lock_from_mix(string(), list()) -> ok | {error, term()}.
+-spec create_rebar_lock_from_mix(string(), list()) -> list() | {error, term()}.
 create_rebar_lock_from_mix(AppDir, Deps) ->
   MixLocks = get_mix_lock(AppDir),
   lists:foldl(
@@ -115,14 +115,14 @@ create_rebar_lock_from_mix(AppDir, Deps) ->
           {Name, {hex, App, Version, _, _, _, _}} ->
             case lists:member(to_string(Name), Deps) of
               true ->
-                Locks ++ [{Name, {iex_dep, App, Version}, 0}];
+                Locks ++ [{Name, {iex, App, Version}, 0}];
               false ->
                 Locks
             end;
           {Name, {git, URL, Hash, _}} ->
             case lists:member(to_string(Name), Deps) of
               true ->
-                Locks ++ [{Name, {iex_dep, URL, Hash}, 0}];
+                Locks ++ [{Name, {iex, URL, Hash}, 0}];
               false ->
                 Locks
             end;

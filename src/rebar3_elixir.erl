@@ -9,8 +9,8 @@ init(State) ->
   
   
   State4 =
-    try rebar_state:add_project_builder(State3, mix, rebar3_elixir_compiler) of
-        Resp -> Resp
+    try  of
+        rebar_state:add_project_builder(State3, mix, rebar3_elixir_compiler)
     catch
       _ -> State3
     end,

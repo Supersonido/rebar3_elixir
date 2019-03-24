@@ -7,10 +7,9 @@ init(State) ->
   State2 = rebar_state:add_resource(State1, {iex, rebar3_elixir_hex}),
   State3 = rebar_state:add_resource(State2, {iex_dep, rebar3_elixir_dep}),
   
-  
   State4 =
-    try  of
-        rebar_state:add_project_builder(State3, mix, rebar3_elixir_compiler)
+    try 
+      rebar_state:add_project_builder(State3, mix, rebar3_elixir_compiler)
     catch
       _ -> State3
     end,

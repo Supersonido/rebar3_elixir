@@ -131,12 +131,12 @@ compile(AppDir) ->
   {ok, _ } = rebar_utils:sh("mix deps.get", 
                             [
                              {cd, AppDir}, 
-                             {use_stdout, false}, 
+                             {use_stdout, true}, 
                              abort_on_error]),
   {ok, _ } = rebar_utils:sh("mix compile", 
                             [
                              {cd, AppDir}, 
-                             {use_stdout, false}, 
+                             {use_stdout, true}, 
                              abort_on_error,
                              {env, [
                                     {"MIX_ENV", "prod"}

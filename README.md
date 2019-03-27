@@ -5,6 +5,14 @@ application. This plugin **can handle transitive
 dependencies**. Elixir dependencies can be specified as **Hex** or
 **Git** dependencies.
 
+## Disclaimer
+
+The plugin hasn't been tested with a relevant range of Elixir
+dependencies so I assume that those Elixir libraries that makes
+extensive use of metaprogramming might not work properly.  The use of
+this plugin in production environments will be **under your
+responsibility.**
+
 ## The transitivity problem
 
 ### Erlang-Elixir-Whatever
@@ -53,7 +61,3 @@ Edit your `rebar.config` and follow these instructions:
     {ecto, {git, "https://github.com/elixir-ecto/ecto.git"}}  %% A regular Elixir dependency in Git
 ]}.
 ```
-
-## Disclaimer
-
-The use of this plugin in production environments will be under your responsibility.

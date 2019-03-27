@@ -57,7 +57,7 @@ Edit your `rebar.config` and follow these instructions:
 
 ```erlang
 {deps, [
-    {absinthe, {hex, "absinthe" ,"1.4"}},  %% An Elixir dependency in Hex
+    {absinthe, {hex, "absinthe" ,"1.4.0"}},  %% An Elixir dependency in Hex
     {ecto, {git, "https://github.com/elixir-ecto/ecto.git"}}  %% A regular Elixir dependency in Git
 ]}.
 ```

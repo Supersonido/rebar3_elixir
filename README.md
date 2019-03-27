@@ -53,7 +53,7 @@ Edit your `rebar.config` and follow these instructions:
 ]}.
 ```
 
-2. Specify Elixir dependencies from hex using the key `iex` (rebar3 syntax is kept for specifying Elixir dependencies from git):
+2. Specify Elixir dependencies from hex using the key `hex` (rebar3 syntax is kept for specifying Elixir dependencies from git):
 
 ```erlang
 {deps, [

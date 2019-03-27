@@ -19,8 +19,8 @@ init(Type, _State) ->
 
 %% Lock
 lock(AppInfo, _) ->
-  {iex, Name, Vsn} = rebar_app_info:source(AppInfo),
-  {iex, rebar3_elixir_utils:to_binary(Name), rebar3_elixir_utils:to_binary(Vsn)}.
+  {hex, Name, Vsn} = rebar_app_info:source(AppInfo),
+  {hex, rebar3_elixir_utils:to_binary(Name), rebar3_elixir_utils:to_binary(Vsn)}.
 
 
 %% Download download
@@ -29,23 +29,20 @@ download(Dir, AppInfo, State, _) ->
   CDN = cdn(State),
   fetch(Pkg, CDN, Dir).
 
+
 %% Needs Update
 needs_update(AppInfo, _) ->
-  {iex, Name, Vsn} = rebar_app_info:source(AppInfo),
-  rebar_api:console("Checking for update, ~p", Name),
-  rebar_api:console("~p : ~p~n", [rebar_app_info:original_vsn(AppInfo), ec_cnv:to_list(Vsn)]),
+  {hex, _Name, Vsn} = rebar_app_info:source(AppInfo),
   case rebar_app_info:original_vsn(AppInfo) =:= ec_cnv:to_list(Vsn) of
     true ->
       false;
     false ->
-      true
+      false
   end.
-
 
 %% Make VSN
 make_vsn(_, _) ->
   {error, "Replacing version of type elixir not supported."}.
-
 
 %%=================================
 %% Private function
@@ -56,12 +53,11 @@ cdn(State) ->
   CDNSite ++ ?CDN_TARBALL_LOCATION.
 
 
-fetch({iex, Name_, Vsn_}, CDN, Dir) ->
-  %%Dir = filename:join([filename:absname("_elixir_build"), Name_]),
+fetch({hex, Name_, Vsn_}, CDN, Dir) ->
   Name = rebar3_elixir_utils:to_binary(Name_), 
   Vsn  = rebar3_elixir_utils:to_binary(Vsn_),
   case filelib:is_dir(Dir) of
-    false ->
+    true ->
       Package = binary_to_list(<<Name/binary, "-", Vsn/binary, ".tar">>),
       Url = string:join([CDN, Package], "/"),
       case request(Url) of
@@ -71,7 +67,7 @@ fetch({iex, Name_, Vsn_}, CDN, Dir) ->
         _ ->
           rebar_api:console("Error: Unable to fetch package ~p ~p~n", [Name, Vsn])
       end;
-    true ->
+    false ->
       ok
   end.
 

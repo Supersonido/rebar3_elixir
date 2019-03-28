@@ -1,5 +1,3 @@
-[TOC]
-
 # rebar3\_elixir
 
 A rebar3 plugin to **include Elixir dependencies** in your Erlang

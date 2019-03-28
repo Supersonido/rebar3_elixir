@@ -1,11 +1,11 @@
+[TOC]
+
 # rebar3\_elixir
 
 A rebar3 plugin to **include Elixir dependencies** in your Erlang
 application. This plugin **can handle transitive
 dependencies**. Elixir dependencies can be specified as **Hex** or
 **Git** dependencies.
-
-[TOC]
 
 ## Disclaimer
 

@@ -72,6 +72,8 @@ Elixir libraries.
 
 ### Overriding a child dependency
 
+Mix gives an error and the plugin cannot progress and is retrying getting the dependencies.
+
 - Configuration
 
 ```erlang
@@ -93,14 +95,14 @@ Elixir libraries.
          %% Some Elixir dependencies
 
         %,{ex_aws, {hex, "ex_aws", "2.1.0"}}
-        % ,{csv, {hex, "csv", "2.3.0"}}
+        %,{csv, {hex, "csv", "2.3.0"}}
         %,{ex_machina, {hex, "ex_machina", "2.3.0"}}
-        % ,{absinthe, {hex, "absinthe", "1.4.16"}}
+        %,{absinthe, {hex, "absinthe", "1.4.16"}}
         %,{phoenix, {hex, "phoenix", "1.4.2"}}
-        % ,{ecto, {hex, "ecto", "3.0.2"}}
+        %,{ecto, {hex, "ecto", "3.0.2"}}
         %,{poison, {hex, "poison", "3.1.0"}}
         ,{jason, {hex, "jason", "1.1.2"}}
-        % ,{decimal, {hex, "decimal", "1.7.0"}}
+        %,{decimal, {hex, "decimal", "1.7.0"}}
         %,{exprotobuf, {hex, "exprotobuf", "1.2.9"}}
         ]}.
 
@@ -113,7 +115,7 @@ Elixir libraries.
 - Scenario
 
 ```bash
-angel@T440p: /example (feature/rebar_update)$ rm -rf _build && ./rebar3 unlock && ./rebar3 compile
+angel@T440p: /example (feature/rebar_update)$ rm -rf rebar.lock _build && ./rebar3 compile
 ===> Fetching rebar3_elixir ({git,"https://github.com/Supersonido/rebar3_elixir.git",
                                   {branch,"feature/rebar_update"}})
 ===> Compiling rebar3_elixir
@@ -128,7 +130,7 @@ remote: Enumerating objects: 6, done.
 remote: Counting objects: 100% (6/6), done.
 remote: Compressing objects: 100% (6/6), done.
 remote: Total 1385 (delta 0), reused 6 (delta 0), pack-reused 1379
-Receiving objects: 100% (1385/1385), 1.42 MiB | 2.03 MiB/s, done.
+Receiving objects: 100% (1385/1385), 1.42 MiB | 2.06 MiB/s, done.
 Resolving deltas: 100% (600/600), done.
 Resolving Hex dependencies...
 Dependency resolution completed:
@@ -186,7 +188,7 @@ remote: Enumerating objects: 6, done.
 remote: Counting objects: 100% (6/6), done.
 remote: Compressing objects: 100% (6/6), done.
 remote: Total 1385 (delta 0), reused 6 (delta 0), pack-reused 1379
-Receiving objects: 100% (1385/1385), 1.42 MiB | 2.03 MiB/s, done.
+Receiving objects: 100% (1385/1385), 1.42 MiB | 2.06 MiB/s, done.
 Resolving deltas: 100% (600/600), done.
 Resolving Hex dependencies...
 Dependency resolution completed:

@@ -15,7 +15,8 @@
 %%====================================================================
 
 start(_StartType, _StartArgs) ->
-    example_sup:start_link().
+  io:format("~p",['Elixir.Decimal':new(<<"1.32">>)]),
+  example_sup:start_link().
 
 %%--------------------------------------------------------------------
 stop(_State) ->

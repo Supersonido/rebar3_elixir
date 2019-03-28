@@ -61,3 +61,9 @@ Edit your `rebar.config` and follow these instructions:
     {ecto, {git, "https://github.com/elixir-ecto/ecto.git"}}  %% A regular Elixir dependency in Git
 ]}.
 ```
+
+## Example
+
+We have prepared an interesting benchmark to use the plugin: directory
+`example` contains an Erlang application that depends on several
+Elixir libraries.

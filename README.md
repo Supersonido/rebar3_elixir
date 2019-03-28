@@ -82,7 +82,7 @@ Mix gives an error and the plugin cannot progress and is retrying getting the de
 {erl_opts, [debug_info]}.
 
 {plugins, [
-    {rebar3_elixir, ".*", {git, "https://github.com/Supersonido/rebar3_elixir.git", {branch, "feature/rebar_update"}}}
+    {rebar3_elixir, ".*", {git, "https://github.com/Supersonido/rebar3_elixir.git", {branch, "master"}}}
 ]}.
 
 {deps,  [
@@ -115,9 +115,9 @@ Mix gives an error and the plugin cannot progress and is retrying getting the de
 - Scenario
 
 ```bash
-angel@T440p: /example (feature/rebar_update)$ rm -rf rebar.lock _build && ./rebar3 compile
+angel@T440p: /example $ rm -rf rebar.lock _build && ./rebar3 compile
 ===> Fetching rebar3_elixir ({git,"https://github.com/Supersonido/rebar3_elixir.git",
-                                  {branch,"feature/rebar_update"}})
+                                  {branch,"master"}})
 ===> Compiling rebar3_elixir
 ===> Verifying dependencies...
 ===> Fetching jason ({hex,"jason","1.1.2"})
@@ -240,5 +240,5 @@ Dependencies have diverged:
   Ensure they match or specify one of the above in your deps and set "override: true"
 ** (Mix) Can't continue due to errors on dependencies
 
-angel@T440p: /example (feature/rebar_update)$
+angel@T440p: /example $
 ```

@@ -5,6 +5,8 @@ application. This plugin **can handle transitive
 dependencies**. Elixir dependencies can be specified as **Hex** or
 **Git** dependencies.
 
+[TOC]
+
 ## Disclaimer
 
 The plugin hasn't been tested with a relevant range of Elixir

@@ -10,7 +10,10 @@
 - `[S]` Security
 - `[T]` Technical change that doesn't affect the API (eg. refactoring)
 
-## Next Release
+## Next release
+
+
+## v1.0.0
 
 - [C] Change the way of fetching and compile elixir dependencies.
 - [+] Add better documentation.

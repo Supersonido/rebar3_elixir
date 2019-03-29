@@ -1,8 +1,8 @@
-{application, rebar3_elixir,
+{application, example,
  [{description, "An OTP application"},
-  {vsn, "1.0.0"},
+  {vsn, "0.1.0"},
   {registered, []},
-  {mod, {rebar3_elixir_app, []}},
+  {mod, {example_app, []}},
   {applications,
    [kernel,
     stdlib

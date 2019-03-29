@@ -12,6 +12,9 @@
 
 ## Next Release
 
+- [C] Change the way of fetching and compile elixir dependencies.
+- [+] Add better documentation.
+
 ## v0.1.0
 
 - [+] Fetch and compile depencies from Hex resource

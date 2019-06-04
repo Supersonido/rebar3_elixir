@@ -12,4 +12,16 @@ init(State) ->
       _ -> State3
     end,
   State5 = rebar3_elixir_utils:add_elixir_to_path(State4),
-  {ok, State5}.
+
+  LibDir = rebar3_elixir_utils:get_lib_dir(State5),
+  RelxConfig = rebar_state:get(State5, relx, []),
+  NewRelxConfig = 
+    case lists:keyfind(lib_dirs, 1, RelxConfig) of
+      {lib_dirs, OldLibDir} -> 
+        NewLibDir = OldLibDir ++ [LibDir],
+        lists:keyreplace(lib_dirs, 1, RelxConfig, {lib_dirs, NewLibDir});
+      false -> 
+        [{lib_dirs, [LibDir]}] ++ RelxConfig  
+    end,
+  State6 = rebar_state:set(State4, relx, NewRelxConfig),  
+  {ok, State6}.

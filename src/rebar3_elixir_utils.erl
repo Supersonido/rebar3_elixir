@@ -2,6 +2,7 @@
 
 -export([to_binary/1, 
          to_string/1,
+         get_lib_dir/1,
          add_elixir/1,
          create_rebar_lock_from_mix/2,
          save_rebar_lock/2,

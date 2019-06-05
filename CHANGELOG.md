@@ -12,6 +12,7 @@
 
 ## Next release
 
+- [+] Add support to erlang releases
 
 ## v1.0.0
 

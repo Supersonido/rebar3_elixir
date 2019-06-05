@@ -2,13 +2,15 @@
 
 -export([to_binary/1, 
          to_string/1,
+         get_lib_dir/1,
          add_elixir/1,
          create_rebar_lock_from_mix/2,
          save_rebar_lock/2,
          compile/1,
          move_to_path/3,
          elixir_to_lock/1,
-         add_elixir_to_path/1
+         add_elixir_to_path/1,
+         delete/1
         ]).
 
 %% @doc Convert binary() | list() | integer() | atom() to binary().
@@ -154,6 +156,10 @@ move_to_path(Files, Source, Traget) ->
         Target1 = filename:join([Traget, File]),              
         ec_file:copy(Source1, Target1, [recursive])
     end, Files).
+
+-spec delete(string()) -> string().
+delete(Dir) ->
+  os:cmd("rm -Rf " ++ Dir).
 
 
 %%=============================

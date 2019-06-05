@@ -25,6 +25,7 @@ build(AppInfo) ->
   Lock = rebar3_elixir_utils:create_rebar_lock_from_mix(AppDir, Deps),
   ElixirLock = rebar3_elixir_utils:elixir_to_lock(Lock),
   rebar3_elixir_utils:save_rebar_lock(AppDir, ElixirLock),
+  rebar3_elixir_utils:delete(filename:join(AppDir, "_build")),
   
   ok.
 

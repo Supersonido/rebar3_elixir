@@ -157,29 +157,9 @@ move_to_path(Files, Source, Traget) ->
         ec_file:copy(Source1, Target1, [recursive])
     end, Files).
 
-
+-spec delete(string()) -> string().
 delete(Dir) ->
-  lists:foreach(fun(D) ->
-                    ok = file:del_dir(D)
-                end, del_all_files([Dir], [])).
-
-del_all_files([], EmptyDirs) ->
-  EmptyDirs;
-del_all_files([Dir | T], EmptyDirs) ->
-  {ok, FilesInDir} = file:list_dir(Dir),
-  {Files, Dirs} = lists:foldl(fun(F, {Fs, Ds}) ->
-                                  Path = Dir ++ "/" ++ F,
-                                  case filelib:is_dir(Path) of
-                                    true ->
-                                      {Fs, [Path | Ds]};
-                                    false ->
-                                      {[Path | Fs], Ds}
-                                  end
-                              end, {[],[]}, FilesInDir),
-  lists:foreach(fun(F) ->
-                    ok = file:delete(F)
-                end, Files),
-  del_all_files(T ++ Dirs, [Dir | EmptyDirs]).
+  os:cmd("rm -Rf " ++ Dir).
 
 
 %%=============================

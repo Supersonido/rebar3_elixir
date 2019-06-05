@@ -13,6 +13,10 @@
 ## Next release
 
 
+## v1.1.0
+
+- [+] Add support to erlang releases
+
 ## v1.0.0
 
 - [C] Change the way of fetching and compile elixir dependencies.
